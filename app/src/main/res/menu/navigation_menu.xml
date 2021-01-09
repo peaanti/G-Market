@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="Жанры">
+        <menu>
+            <item android:title="Стратегии"
+                android:icon="@drawable/ic_strategies"/>
+            <item android:title="Экшен"
+                android:icon="@drawable/ic_action"/>
+            <item android:title="Шутеры"
+                android:icon="@drawable/ic_shooters"/>
+            <item android:title="Гонки"
+                android:icon="@drawable/ic_racing"/>
+            <item android:title="Спорт"
+                android:icon="@drawable/ic_baseline_sports_soccer_24"/>
+            <item android:title="Приключения"
+                android:icon="@drawable/ic_adventures"/>
+            <item android:title="Симуляторы"
+                android:icon="@drawable/ic_simulators"/>
+            <item android:title="RPG"
+                android:icon="@drawable/ic_rpg"/>
+        </menu>
+    </item>
+
+    <item android:title="Другое">
+        <menu>
+            <item android:title="Оставить отзыв"
+                android:id="@+id/rate_us"
+                android:icon="@drawable/ic_baseline_star_rate_24" />
+            <item android:title="Сообщить о проблеме"
+                android:id="@+id/report"
+                android:icon="@drawable/ic_baseline_report_24" />
+        </menu>
+    </item>
+
+</menu>
