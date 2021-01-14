@@ -12,25 +12,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-            <SearchView
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.12"
-                tools:layout_editor_absoluteX="0dp" />
-        
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Тут типо будут товары"
-            android:textColor="@color/black"
-            android:textSize="30sp"
+        <SearchView
+            android:id="@+id/searchView"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.12"
+            tools:layout_editor_absoluteX="0dp" />
+
+
 
         <LinearLayout
             android:id="@+id/linearLayout"
@@ -63,8 +54,24 @@
 
         </LinearLayout>
 
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="130dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
+            <TextView
+                android:id="@+id/text_view_result"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="serif"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textSize="30sp"
+                android:layout_marginTop="25dp"/>
 
+        </androidx.core.widget.NestedScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.navigation.NavigationView
