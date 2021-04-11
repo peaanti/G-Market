@@ -3,14 +3,16 @@ package com.example.g_market;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.widget.TextView;
+import android.util.Log;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
@@ -20,7 +22,9 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView textViewResult;
+
+    RecyclerView recyclerView;
+    ProductAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +34,16 @@ public class MainActivity extends AppCompatActivity {
         final DrawerLayout drawerLayout = findViewById(R.id.drawerLayout);
         findViewById(R.id.imageMenu).setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
 
-        textViewResult = findViewById(R.id.text_view_result);
+        recyclerView = findViewById(R.id.recyclerView);
 
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+
+        showAllProducts();
+
+    }
+
+    public void showAllProducts() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.steampay.com/api/")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -45,27 +57,16 @@ public class MainActivity extends AppCompatActivity {
             @SuppressLint("SetTextI18n")
             @Override
             public void onResponse(@NotNull Call<Products> call, @NotNull Response<Products> response) {
-                if (!response.isSuccessful()){
-                    textViewResult.setText("Code" + response.code());
-                    return;
-                }
-
-                List<Product> products = response.body().getProducts();
-
-                for (Product product : products) {
-                    String content = "";
-                    content += "Title: " + product.getTitle() + "\n";
-                    content += "Url: " + product.getUrl() + "\n";
-                    content += "Availability: " + product.getIs_available() + "\n";
-                    content +="Price: " + product.getPrices().getRub() + " ₽\n";
-
-                    textViewResult.append(content);
+                if (!response.isSuccessful()) {
+                    List<Product> products = response.body().getProducts();
+                    adapter.setData(products);
+                    recyclerView.setAdapter(adapter);
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call<Products> call, @NotNull Throwable t) {
-                textViewResult.setText(t.getMessage());
+                Log.e("failure", t.getLocalizedMessage());
             }
         });
     }
