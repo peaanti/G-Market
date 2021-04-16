@@ -14,10 +14,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductA
 
     private List<Product> mproductList;
 
-    public ProductAdapter() {
-    }
-
-    public void setData(List<Product> productList) {
+    public ProductAdapter(List<Product> productList) {
         this.mproductList = productList;
         notifyDataSetChanged();
     }
@@ -37,8 +34,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductA
         String product_name = product.getTitle();
         double product_price = product.getPrices().getRub();
 
-        holder.product_name.setText(product_name);
-        holder.product_price.setText((int) product_price);
+        try {
+            holder.product_name.setText(product_name);
+            holder.product_price.setText((int) product_price);
+        } catch (Exception e) {}
+
 
     }
 

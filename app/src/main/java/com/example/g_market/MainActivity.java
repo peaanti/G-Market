@@ -14,6 +14,7 @@ import android.util.Log;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -38,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-
         showAllProducts();
 
     }
@@ -57,16 +57,19 @@ public class MainActivity extends AppCompatActivity {
             @SuppressLint("SetTextI18n")
             @Override
             public void onResponse(@NotNull Call<Products> call, @NotNull Response<Products> response) {
-                if (!response.isSuccessful()) {
+                Log.e("1", "onResponse");
+                if (response.isSuccessful()) {
+                    assert response.body() != null;
                     List<Product> products = response.body().getProducts();
-                    adapter.setData(products);
+                    adapter = new ProductAdapter(products);
                     recyclerView.setAdapter(adapter);
+                    Log.e("1", "Success!!!");
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call<Products> call, @NotNull Throwable t) {
-                Log.e("failure", t.getLocalizedMessage());
+                Log.e("failure", Objects.requireNonNull(t.getLocalizedMessage()));
             }
         });
     }
