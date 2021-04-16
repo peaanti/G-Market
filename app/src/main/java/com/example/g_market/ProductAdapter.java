@@ -1,5 +1,6 @@
 package com.example.g_market;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductA
                 .inflate(R.layout.item_container, parent, false));
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ProductAdapterVH holder, int position) {
 
@@ -36,7 +38,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductA
 
         try {
             holder.product_name.setText(product_name);
-            holder.product_price.setText((int) product_price);
+            holder.product_price.setText(product_price + "₽");
         } catch (Exception e) {}
 
 
