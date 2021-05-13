@@ -8,6 +8,7 @@ public class Product {
     private String title;
     private String is_available;
     private Prices prices;
+    public String image;
 
 
     public String getUrl() {
@@ -26,6 +27,8 @@ public class Product {
         return prices;
     }
 
+    public String getImage() { return image; }
+
     public void setUrl(String url) {
         this.url = url;
     }
@@ -42,14 +45,7 @@ public class Product {
         this.prices = prices;
     }
 
-    @NotNull
-    @Override
-    public String toString() {
-        return "Product{" +
-                "title=" + title +
-                ", url='" + url + '\'' +
-                ", price='" + prices + '\'' +
-                '}';
-    }
+    public void setImage(String image) { this.image = image; }
+
 
 }
