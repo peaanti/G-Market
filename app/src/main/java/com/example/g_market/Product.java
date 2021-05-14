@@ -1,7 +1,4 @@
 package com.example.g_market;
-
-import org.jetbrains.annotations.NotNull;
-
 public class Product {
 
     private String url;

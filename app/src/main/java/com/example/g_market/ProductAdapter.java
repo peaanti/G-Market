@@ -11,33 +11,30 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Cache;
-import com.android.volley.Network;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.BasicNetwork;
-import com.android.volley.toolbox.DiskBasedCache;
-import com.android.volley.toolbox.HurlStack;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.List;
+import java.util.Objects;
+
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductAdapterVH> {
 
     private final List<Product> mproductList;
-    RequestQueue requestQueue;
 
-    public ProductAdapter(List<Product> productList, MainActivity activity) {
+
+    public ProductAdapter(List<Product> productList) {
         this.mproductList = productList;
-        Cache cache = new DiskBasedCache(activity.getCacheDir(), 1024 * 1024); // 1MB cap
-        Network network = new BasicNetwork(new HurlStack());
-        requestQueue = new RequestQueue(cache, network);
         notifyDataSetChanged();
     }
 
@@ -50,26 +47,61 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductA
     }
 
     public void json_parse(String product_name, ImageView product_image) throws UnsupportedEncodingException {
-        String url = "https://steampay.com/api/search?query=" + URLEncoder.encode(product_name, "UTF-8");
+        String url = "https://steampay.com/api/";
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
-                response -> {
-                    try {
-                        JSONArray jsonArray = response.getJSONArray("products");
-                        JSONObject product = jsonArray.getJSONObject(0);
-                        String imageUrl = product.getString("image");
-                        Log.e("picture", "before");
-                        Picasso.get().load(imageUrl)
-                                .resize(172, 81)
-                                .centerCrop()
-                                .into(product_image);
-                        Log.e("picture", "after");
-                    } catch (Exception e) {
-                        e.printStackTrace();
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(logging)
+                .build();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(url)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build();
+
+        JustJsonPlaceHolderApi jsonPlaceHolderApi = retrofit.create(JustJsonPlaceHolderApi.class);
+        Call<JustProducts> call = jsonPlaceHolderApi.getJustProducts(product_name);
+
+        call.enqueue(new Callback<JustProducts>() {
+
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onResponse(@NotNull Call<JustProducts> call, @NotNull Response<JustProducts> response) {
+                if (response.isSuccessful()) {
+                    assert response.body() != null;
+                    List<JustProduct> justproducts = response.body().getjustProducts();
+                    JustProduct justProduct;
+                    if (justproducts.size() > 0){
+                       justProduct = justproducts.get(0);
+                        String img_url = justProduct.getImage();
+                        Log.e("1", "it works!");
+                        try {
+                            Log.e("picture", "before");
+                            Picasso.get().load(img_url)
+                                    .resize(172, 81)
+                                    .centerCrop()
+                                    .into(product_image);
+                            Log.e("picture", "after");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
-                }, Throwable::printStackTrace);
-        Log.e("1", "aaaaa");
-        requestQueue.add(request);
+                    else{
+                        Log.e("log", "not working");
+                    }
+
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<JustProducts> call, @NotNull Throwable t) {
+                Log.e("failure", Objects.requireNonNull(t.getLocalizedMessage()));
+            }
+        });
+
     }
 
 
@@ -82,11 +114,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductA
         String product_name = product.getTitle();
         double product_price = product.getPrices().getRub();
 
-        Log.e("5", "try");
+        Log.e("500", "try");
         holder.product_name.setText(product_name);
-        Log.e("6", "product_name set text");
+        Log.e("600", "product_name set text");
         holder.product_price.setText(product_price + "₽");
-        Log.e("7", "");
+        Log.e("700", "set price");
 
         try {
             json_parse(product_name, holder.product_image);
