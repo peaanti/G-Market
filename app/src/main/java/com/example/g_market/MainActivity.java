@@ -20,6 +20,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Objects;
 
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -30,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     RecyclerView recyclerView;
     ProductAdapter adapter;
+    Top50ProductAdapter Top50adapter;
 
 
     @Override
@@ -46,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-        showAllProducts();
+        showTop50();
     }
 
     public void showAllProducts() {
@@ -80,6 +83,46 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
+    public void showTop50(){
+
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(logging)
+                .build();
+
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://steampay.com/api/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build();
+
+        Top50JsonPlaceHolderApi top50JsonPlaceHolderApi = retrofit.create(Top50JsonPlaceHolderApi.class);
+
+        Call<Top50Products> call = top50JsonPlaceHolderApi.getTop50Products();
+
+        call.enqueue(new Callback<Top50Products>() {
+            @Override
+            public void onResponse(@NotNull Call<Top50Products> call, @NotNull Response<Top50Products> response) {
+                if(response.isSuccessful()){
+                    System.out.println("TOP 50 done!!!!!");
+                    assert response.body() != null;
+                    List<Top50Product> Top50products = response.body().getTop50Products();
+                    System.out.println(Top50products);
+                    Top50adapter = new Top50ProductAdapter(Top50products);
+                    recyclerView.setAdapter(Top50adapter);
+                    Log.e("1", "Success!!!");
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<Top50Products> call, @NotNull Throwable t) {
+                Log.e("failure", Objects.requireNonNull(t.getLocalizedMessage()));
+            }
+        });
+    }
+
     private void setOnNavigationViewListener() {
         NavigationView navigationView = findViewById(R.id.navigationView);
         navigationView.setNavigationItemSelectedListener(this);
@@ -94,7 +137,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 showAllProducts();
                 Log.e("1", "eeee");
             case R.id.SHOW_TOP50:
-                Log.e("2", "succ");
+                showTop50();
+                Log.e("2", "success");
         }
         DrawerLayout drawer = findViewById(R.id.drawerLayout);
         drawer.closeDrawer(GravityCompat.START);

@@ -5,14 +5,11 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class JustProducts {
+public class Top50Products {
     @SerializedName("products")
     @Expose
-    private List<JustProduct> justProducts = null;
+    private final List<Top50Product> Top50Products = null;
 
-    public List<JustProduct> getjustProducts() {
-        return justProducts;
-    }
-
+    public List<Top50Product> getTop50Products() { return Top50Products; }
 
 }

@@ -32,7 +32,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductA
 
     private final List<Product> mproductList;
 
-
     public ProductAdapter(List<Product> productList) {
         this.mproductList = productList;
         notifyDataSetChanged();
@@ -46,63 +45,65 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductA
                 .inflate(R.layout.item_container, parent, false));
     }
 
-    public void json_parse(String product_name, ImageView product_image) throws UnsupportedEncodingException {
-        String url = "https://steampay.com/api/";
+        public void json_parse(String product_name, ImageView product_image) throws UnsupportedEncodingException {
 
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
+            String url = "https://steampay.com/api/";
+            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
 
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(logging)
-                .build();
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(url)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(client)
-                .build();
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .addInterceptor(logging)
+                    .build();
 
-        JustJsonPlaceHolderApi jsonPlaceHolderApi = retrofit.create(JustJsonPlaceHolderApi.class);
-        Call<JustProducts> call = jsonPlaceHolderApi.getJustProducts(product_name);
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(url)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(client)
+                    .build();
 
-        call.enqueue(new Callback<JustProducts>() {
+            JustJsonPlaceHolderApi jsonPlaceHolderApi = retrofit.create(JustJsonPlaceHolderApi.class);
+            Call<JustProducts> call = jsonPlaceHolderApi.getJustProducts(product_name);
 
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onResponse(@NotNull Call<JustProducts> call, @NotNull Response<JustProducts> response) {
-                if (response.isSuccessful()) {
-                    assert response.body() != null;
-                    List<JustProduct> justproducts = response.body().getjustProducts();
-                    JustProduct justProduct;
-                    if (justproducts.size() > 0){
-                       justProduct = justproducts.get(0);
-                        String img_url = justProduct.getImage();
-                        Log.e("1", "it works!");
-                        try {
-                            Log.e("picture", "before");
-                            Picasso.get().load(img_url)
-                                    .resize(172, 81)
-                                    .centerCrop()
-                                    .into(product_image);
-                            Log.e("picture", "after");
-                        } catch (Exception e) {
-                            e.printStackTrace();
+            call.enqueue(new Callback<JustProducts>() {
+
+                @SuppressLint("SetTextI18n")
+                @Override
+                public void onResponse(@NotNull Call<JustProducts> call, @NotNull Response<JustProducts> response) {
+                    if (response.isSuccessful()) {
+                        assert response.body() != null;
+                        List<JustProduct> justproducts = response.body().getjustProducts();
+                        JustProduct justProduct;
+                        if (justproducts.size() > 0){
+                            justProduct = justproducts.get(0);
+                            String img_url = justProduct.getImage();
+                            Log.e("1", "it works!");
+                            try {
+                                Log.e("picture", "before");
+                                Picasso.get().load(img_url)
+                                        .resize(172, 81)
+                                        .centerCrop()
+                                        .into(product_image);
+                                Log.e("picture", "after");
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
-                    }
-                    else{
-                        Log.e("log", "not working");
-                    }
+                        else{
+                            Log.e("log", "not working");
+                        }
 
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(@NotNull Call<JustProducts> call, @NotNull Throwable t) {
-                Log.e("failure", Objects.requireNonNull(t.getLocalizedMessage()));
-            }
-        });
+                @Override
+                public void onFailure(@NotNull Call<JustProducts> call, @NotNull Throwable t) {
+                    Log.e("failure", Objects.requireNonNull(t.getLocalizedMessage()));
+                }
+            });
 
-    }
+        }
+
+
 
 
     @SuppressLint("SetTextI18n")
