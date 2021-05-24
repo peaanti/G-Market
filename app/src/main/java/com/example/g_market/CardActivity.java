@@ -1,9 +1,12 @@
 package com.example.g_market;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -30,11 +33,23 @@ public class CardActivity extends AppCompatActivity {
         TextView product_price = findViewById(R.id.product_price_card);
         TextView product_description = findViewById(R.id.product_description_card);
         TextView product_name_to_buy = findViewById(R.id.product_name_to_buy_card);
+        Button btn = findViewById(R.id.product_buy_button);
+
+
 
         if (getIntent().hasExtra("product")) {
             Top50Product top50Product = getIntent().getParcelableExtra("product");
             String title = top50Product.getTitle();
             product_name.setText(title);
+            String url = top50Product.getUrl();
+
+            btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Uri uri = Uri.parse(url);
+                    startActivity(new Intent(Intent.ACTION_VIEW, uri));
+                }
+            });
 
             String pic_url = top50Product.getImage();
             try {
@@ -53,6 +68,7 @@ public class CardActivity extends AppCompatActivity {
             final String[] price = new String[1];
             final String[] description = new String[1];
 
+
             new Thread() {
                 public void run() {
                     Document doc = null;
@@ -65,17 +81,28 @@ public class CardActivity extends AppCompatActivity {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    
+                    int flag = 1;
+                    
                     price[0] = doc.select("div.product__current-price").text();
                     System.out.println(price[0]);
-                    Elements element = doc.select("div.product__description-content");
-                    description[0] = element.select("p").first().text();
+                    try{
+                        Elements element = doc.select("div.product__description-content");
+                        description[0] = element.select("p").first().text();
+                    } catch (Exception ignored){
+                        flag = 0;
+                    }
+                    
                     System.out.println(description[0]);
+                    int finalFlag = flag;
                     runOnUiThread(new Runnable() {
 
                         @Override
                         public void run() {
                             product_price.setText(price[0].replace("руб.", "₽"));
-                            product_description.setText(description[0]);
+                            if(finalFlag != 0){
+                                product_description.setText(description[0]);
+                            }
                         }
                     });
 
