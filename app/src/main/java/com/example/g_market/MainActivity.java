@@ -1,9 +1,11 @@
 package com.example.g_market;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +19,7 @@ import com.google.android.material.navigation.NavigationView;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,6 +36,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     RecyclerView recyclerView;
     ProductAdapter adapter;
     Top50ProductAdapter Top50adapter;
+    Top50ProductAdapter.RecyclerViewClickListener listener;
+    List<Top50Product> Top50products;
 
 
     @Override
@@ -43,8 +48,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         final DrawerLayout drawerLayout = findViewById(R.id.drawerLayout);
         findViewById(R.id.imageMenu).setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
         setOnNavigationViewListener();
-
-
         recyclerView = findViewById(R.id.recyclerView);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -83,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    public void showTop50(){
+    public void showTop50() {
 
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
 
@@ -105,15 +108,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         call.enqueue(new Callback<Top50Products>() {
             @Override
             public void onResponse(@NotNull Call<Top50Products> call, @NotNull Response<Top50Products> response) {
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
+                    setOnClickListener();
                     System.out.println("TOP 50 done!!!!!");
                     assert response.body() != null;
-                    List<Top50Product> Top50products = response.body().getTop50Products();
-                    System.out.println(Top50products);
-                    Top50adapter = new Top50ProductAdapter(Top50products);
+                    Top50products = response.body().getTop50Products();
+                    Top50adapter = new Top50ProductAdapter(Top50products, listener);
                     recyclerView.setAdapter(Top50adapter);
                     Log.e("1", "Success!!!");
                 }
+            }
+
+            private void setOnClickListener() {
+                listener = new Top50ProductAdapter.RecyclerViewClickListener() {
+                    @Override
+                    public void onClick(View v, int position) {
+                        Intent intent = new Intent(getApplicationContext(), CardActivity.class);
+                        intent.putExtra("product", Top50products.get(position));
+                        Log.e("intent", "intent");
+                        startActivity(intent);
+                    }
+                };
             }
 
             @Override

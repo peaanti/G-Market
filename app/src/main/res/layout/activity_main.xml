@@ -18,7 +18,6 @@
             android:layout_height="?actionBarSize"
             android:background="@color/black"
             android:gravity="center_vertical"
-
             android:orientation="horizontal"
             app:layout_constraintTop_toTopOf="parent">
 

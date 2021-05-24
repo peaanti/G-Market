@@ -80,7 +80,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductA
                             try {
                                 Log.e("picture", "before");
                                 Picasso.get().load(img_url)
-                                        .resize(172, 81)
+                                        .resize(460, 215)
                                         .centerCrop()
                                         .into(product_image);
                                 Log.e("picture", "after");

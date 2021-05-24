@@ -17,10 +17,12 @@ import java.util.List;
 
 public class Top50ProductAdapter extends RecyclerView.Adapter<Top50ProductAdapter.Top50ProductAdapterVH> {
 
-    private final List<Top50Product> mtop50productList;
+    private List<Top50Product> top50productList;
+    private RecyclerViewClickListener listener;
 
-    public Top50ProductAdapter(List<Top50Product> top50productList) {
-        this.mtop50productList = top50productList;
+    public Top50ProductAdapter(List<Top50Product> top50productList, RecyclerViewClickListener listener) {
+        this.top50productList = top50productList;
+        this.listener = listener;
         notifyDataSetChanged();
     }
 
@@ -34,7 +36,7 @@ public class Top50ProductAdapter extends RecyclerView.Adapter<Top50ProductAdapte
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull Top50ProductAdapterVH holder, int position) {
-        Top50Product top50product = mtop50productList.get(position);
+        Top50Product top50product = top50productList.get(position);
 
         String image_url = top50product.getImage();
         String product_name = top50product.getTitle();
@@ -43,7 +45,7 @@ public class Top50ProductAdapter extends RecyclerView.Adapter<Top50ProductAdapte
         try {
             Log.e("picture", "before");
             Picasso.get().load(image_url)
-                    .resize(172, 81)
+                    .resize(460, 215)
                     .centerCrop()
                     .into(holder.product_image);
             Log.e("picture", "after");
@@ -62,10 +64,10 @@ public class Top50ProductAdapter extends RecyclerView.Adapter<Top50ProductAdapte
 
     @Override
     public int getItemCount() {
-        return mtop50productList.size();
+        return top50productList.size();
     }
 
-    public static class Top50ProductAdapterVH extends RecyclerView.ViewHolder {
+    public class Top50ProductAdapterVH extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         TextView product_name;
         TextView product_price;
@@ -76,6 +78,16 @@ public class Top50ProductAdapter extends RecyclerView.Adapter<Top50ProductAdapte
             product_name = itemView.findViewById(R.id.product_name);
             product_price = itemView.findViewById(R.id.product_price);
             product_image = itemView.findViewById(R.id.product_image);
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            listener.onClick(v, getAbsoluteAdapterPosition());
+        }
+    }
+
+    public interface RecyclerViewClickListener{
+        void onClick(View v, int position);
     }
 }

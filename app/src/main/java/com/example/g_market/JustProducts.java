@@ -14,5 +14,4 @@ public class JustProducts {
         return justProducts;
     }
 
-
 }
